@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { CURRICULUM, getQuizBank, getUnits, getSubjectColor } from "./curriculum";
+import { LESSON_VISUALS, useNarration, NarrationBtn } from "./lesson-visuals";
 
 // ─── GOOGLE FONTS: Press Start 2P + Nunito ─────────────────────────
 const fontLink = document.createElement("link");
@@ -187,59 +189,12 @@ const BOSSES = [
     reward: { coins: 1000, xp: 2000, badge: "💀 GALACTIC CHAMPION" } },
 ];
 
-// ─── QUESTION BANK ────────────────────────────────────────────────
+// ─── QUESTION BANK — powered by curriculum.js ─────────────────────
+// Returns quiz questions for the adaptive quiz screen
 const QUESTION_BANK = {
-  "2-3": {
-    Math: [
-      {id:1,q:"What is 2 + 3?",opts:["4","5","6","7"],ans:1,diff:1,topic:"Addition"},
-      {id:2,q:"What is 4 × 3?",opts:["10","12","14","16"],ans:1,diff:1,topic:"Multiplication"},
-      {id:3,q:"What is 1/2 + 1/4?",opts:["1/6","2/6","3/4","1/4"],ans:2,diff:2,topic:"Fractions"},
-      {id:4,q:"What is 15 ÷ 3?",opts:["3","4","5","6"],ans:2,diff:2,topic:"Division"},
-      {id:5,q:"Pizza has 8 slices, you eat 3/8. How many slices?",opts:["2","3","4","5"],ans:1,diff:3,topic:"Fractions"},
-      {id:6,q:"What is 7 × 8?",opts:["54","56","58","64"],ans:1,diff:2,topic:"Multiplication"},
-      {id:7,q:"Largest fraction: 1/2, 1/3, or 3/4?",opts:["1/2","1/3","3/4","Equal"],ans:2,diff:3,topic:"Fractions"},
-      {id:8,q:"What is 6 × 4?",opts:["20","22","24","26"],ans:2,diff:1,topic:"Multiplication"},
-      {id:9,q:"What is 36 ÷ 6?",opts:["5","6","7","8"],ans:1,diff:1,topic:"Division"},
-      {id:10,q:"What is 3/4 of 20?",opts:["10","12","15","18"],ans:2,diff:3,topic:"Fractions"},
-    ],
-    Science: [
-      {id:11,q:"Which planet is closest to the Sun?",opts:["Venus","Earth","Mercury","Mars"],ans:2,diff:1,topic:"Space"},
-      {id:12,q:"Plants make food using sunlight, water and...?",opts:["Nitrogen","CO2","Oxygen","Soil"],ans:1,diff:2,topic:"Plants"},
-      {id:13,q:"How many planets in our solar system?",opts:["7","8","9","10"],ans:1,diff:1,topic:"Space"},
-      {id:14,q:"What gas do plants release during photosynthesis?",opts:["CO2","Nitrogen","Oxygen","Hydrogen"],ans:2,diff:3,topic:"Plants"},
-      {id:15,q:"Largest planet in our solar system?",opts:["Saturn","Neptune","Jupiter","Uranus"],ans:2,diff:2,topic:"Space"},
-    ],
-  },
-  "K-1": {
-    Math: [
-      {id:16,q:"How many legs does a dog have?",opts:["2","4","6","8"],ans:1,diff:1,topic:"Counting"},
-      {id:17,q:"What comes after 9?",opts:["7","8","11","10"],ans:3,diff:1,topic:"Counting"},
-      {id:18,q:"Which shape has 3 sides?",opts:["Square","Circle","Triangle","Rectangle"],ans:2,diff:1,topic:"Shapes"},
-      {id:19,q:"How many fingers on 2 hands?",opts:["8","9","10","12"],ans:2,diff:1,topic:"Counting"},
-      {id:20,q:"What is 3 + 4?",opts:["6","7","8","9"],ans:1,diff:2,topic:"Addition"},
-    ],
-    Science: [
-      {id:21,q:"What do fish breathe with?",opts:["Lungs","Gills","Skin","Nose"],ans:1,diff:2,topic:"Animals"},
-      {id:22,q:"What does the sun give us?",opts:["Rain","Light & warmth","Wind","Snow"],ans:1,diff:1,topic:"Weather"},
-      {id:23,q:"Where do polar bears live?",opts:["Desert","Rainforest","Arctic","Ocean"],ans:2,diff:2,topic:"Animals"},
-    ],
-  },
-  "4-5": {
-    Math: [
-      {id:24,q:"What is 25% of 80?",opts:["15","20","25","30"],ans:1,diff:2,topic:"Percentages"},
-      {id:25,q:"What is 144 ÷ 12?",opts:["11","12","13","14"],ans:1,diff:2,topic:"Division"},
-      {id:26,q:"What is 0.75 as a fraction?",opts:["1/4","1/2","3/4","2/3"],ans:2,diff:3,topic:"Decimals"},
-      {id:27,q:"What is 15% of 200?",opts:["25","30","35","40"],ans:1,diff:3,topic:"Percentages"},
-      {id:28,q:"What is 8²?",opts:["16","48","64","56"],ans:2,diff:3,topic:"Exponents"},
-      {id:29,q:"What is 9 × 7?",opts:["54","56","63","72"],ans:2,diff:1,topic:"Multiplication"},
-    ],
-    Science: [
-      {id:30,q:"Which force pulls objects toward Earth?",opts:["Friction","Gravity","Magnetism","Tension"],ans:1,diff:1,topic:"Forces"},
-      {id:31,q:"What energy does the Sun produce?",opts:["Chemical","Nuclear","Electrical","Mechanical"],ans:1,diff:3,topic:"Energy"},
-      {id:32,q:"How many bones in the adult human body?",opts:["186","206","226","246"],ans:1,diff:3,topic:"Body"},
-      {id:33,q:"Water turning to vapor is called?",opts:["Condensation","Precipitation","Evaporation","Filtration"],ans:2,diff:2,topic:"Water Cycle"},
-    ],
-  },
+  "K-1":  { Math: getQuizBank("K-1","Math"),  Science: getQuizBank("K-1","Science"),  English: getQuizBank("K-1","English"),  SocialStudies: getQuizBank("K-1","SocialStudies") },
+  "2-3":  { Math: getQuizBank("2-3","Math"),  Science: getQuizBank("2-3","Science"),  English: getQuizBank("2-3","English"),  SocialStudies: getQuizBank("2-3","SocialStudies") },
+  "4-5":  { Math: getQuizBank("4-5","Math"),  Science: getQuizBank("4-5","Science"),  English: getQuizBank("4-5","English"),  SocialStudies: getQuizBank("4-5","SocialStudies") },
 };
 
 // ─── LEADERBOARD DATA ─────────────────────────────────────────────
@@ -256,12 +211,12 @@ const LEADERBOARD = [
 
 // ─── PROFILES ─────────────────────────────────────────────────────
 const PROFILES = [
-  { id:"s1", name:"Alex", avatar:"🧒", grade:"2-3", gradeLabel:"3rd Grade",
+  { id:"s1", name:"Alex", avatar:"🧒", grade:"2-3", gradeLabel:"2nd Grade",
     coins:420, xp:2840, streak:9, rank:3,
     adaptLevel:2, petId:"cosmo", petHunger:70,
     badges:["🧛 Minus Slayer","⚡ Speed Demon","🌟 Star Gazer"],
     bossesDefeated:["minus"], hearts:3 },
-  { id:"s2", name:"Mia", avatar:"👧", grade:"K-1", gradeLabel:"1st Grade",
+  { id:"s2", name:"Mia", avatar:"👧", grade:"2-3", gradeLabel:"2nd Grade",
     coins:210, xp:980, streak:5, rank:8,
     adaptLevel:1, petId:"nova", petHunger:45,
     badges:["🌟 Star Gazer"], bossesDefeated:[], hearts:3 },
@@ -1168,95 +1123,141 @@ function CompeteScreen({ profile, burst, shake }) {
 // ═══════════════════════════════════════════════════════════════════
 // ── SCREEN: LEARN ─────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════
-const UNITS = [
-  { id:1, title:"Number Nebula",  emoji:"🔢", color:C.blue,   xp:100, progress:75, locked:false,
-    lessons:[
-      { id:"1a", title:"Counting to 100",  emoji:"🔢", type:"📖", steps:["Numbers 1–100 follow a pattern: ones, tens, hundreds!", "After 9 comes 10. After 19 comes 20. See the pattern?", "Pro tip: count by 10s first — 10, 20, 30... then fill in the gaps!"], quiz:["2-3"] },
-      { id:"1b", title:"Addition Basics",  emoji:"➕", type:"💡", steps:["Addition means putting groups together.", "Think of it like collecting coins — 3 coins + 4 coins = 7 coins!", "Pro tip: always start with the bigger number and count up."], quiz:["2-3"] },
-      { id:"1c", title:"Subtraction",      emoji:"➖", type:"🌟", steps:["Subtraction is taking away from a group.", "If you have 10 stars and give 3 away, you have 7 left.", "Pro tip: subtraction is just addition backwards!"], quiz:["2-3"] },
-    ]
-  },
-  { id:2, title:"Fraction Forest", emoji:"🍕", color:C.green,  xp:150, progress:40, locked:false,
-    lessons:[
-      { id:"2a", title:"What is a Fraction?", emoji:"🍕", type:"📖", steps:["A fraction is a part of a whole.", "If you cut a pizza into 4 equal slices, each slice is 1/4.", "The bottom number (denominator) = total slices. Top number (numerator) = slices you have."], quiz:["2-3"] },
-      { id:"2b", title:"Comparing Fractions", emoji:"⚖️", type:"💡", steps:["Which is bigger: 1/2 or 1/4?", "Imagine the same pizza — half is a bigger slice than a quarter!", "Bigger denominator = smaller pieces (when numerators are equal)."], quiz:["2-3"] },
-    ]
-  },
-  { id:3, title:"Geometry Galaxy", emoji:"📐", color:C.purple, xp:200, progress:10, locked:false,
-    lessons:[
-      { id:"3a", title:"2D Shapes",        emoji:"🔷", type:"📖", steps:["2D shapes are flat — they only have length and width.", "Triangle=3 sides, Square=4 equal sides, Pentagon=5 sides.", "Pro tip: count the corners — corners always equal sides!"], quiz:["2-3"] },
-      { id:"3b", title:"Area & Perimeter", emoji:"📏", type:"💡", steps:["Perimeter = distance all the way around a shape.", "Area = the space inside a shape.", "Rectangle perimeter: add all 4 sides. Area: length × width."], quiz:["4-5"] },
-    ]
-  },
-  { id:4, title:"Science Station",  emoji:"🔬", color:C.orange, xp:200, progress:0, locked:true,  lessons:[] },
-  { id:5, title:"Final Frontier",   emoji:"🚀", color:C.gold,   xp:500, progress:0, locked:true,  lessons:[] },
-];
+const SUBJECT_META = {
+  Math:         { emoji:"🔢", color:C.blue,   label:"Math" },
+  Science:      { emoji:"🔬", color:C.green,  label:"Science" },
+  English:      { emoji:"📖", color:C.pink,   label:"English" },
+  SocialStudies:{ emoji:"🌍", color:C.gold,   label:"Social Studies" },
+};
 
-function LessonView({ lesson, unit, onBack, burst }) {
+function LessonView({ lesson, unit, grade, subject, onBack, burst }) {
   const [step, setStep] = useState(0);
-  const [phase, setPhase] = useState("learn"); // learn | quiz | done
+  const [phase, setPhase] = useState("learn");
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [showReview, setShowReview] = useState(false);
+  const [answers, setAnswers] = useState([]);
+  const { enabled: audioOn, speaking, speak, stop, toggle: toggleAudio } = useNarration();
 
-  const bank = QUESTION_BANK["2-3"]?.Math || [];
-  const q = bank[qIdx % bank.length];
-  const QUIZ_Q = 3;
+  // Visual component for this lesson
+  const visualEntry = LESSON_VISUALS[lesson.id];
+  const VisualComponent = visualEntry?.component || null;
+
+  // Speak step text when step changes (if audio on)
+  useEffect(() => {
+    if (audioOn && phase === "learn") {
+      speak(lesson.steps[step]);
+    }
+  }, [step, audioOn, phase]);
+
+  // Use the unit's own quiz questions
+  const bank = unit.quiz || QUESTION_BANK[grade]?.[subject] || [];
+  const startIdx = (lesson.quizOffset || 0);
+  const QUIZ_Q = 5;
+  const q = bank[(startIdx + qIdx) % Math.max(bank.length, 1)];
 
   const handleAnswer = (i, e) => {
     if (answered) return;
     setSelected(i); setAnswered(true);
-    if (i === q.ans) {
+    const correct = i === q.ans;
+    if (correct) {
       SFX.play("correct");
       burst(e.clientX, e.clientY, 16, [unit.color, C.gold]);
       setScore(s => s + 1);
     } else {
       SFX.play("wrong");
     }
+    setAnswers(prev => [...prev, { qObj: q, selected: i, correct }]);
+  };
+
+  const getLetterGrade = (pct) => {
+    if (pct === 100) return { letter:"S+", color:C.gold,   emoji:"🏆", msg:"PERFECT SCORE! Outstanding!" };
+    if (pct >= 80)  return { letter:"A",  color:C.green,  emoji:"⭐", msg:"Excellent work!" };
+    if (pct >= 60)  return { letter:"B",  color:C.blue,   emoji:"👍", msg:"Good job! Review the ones you missed." };
+    if (pct >= 40)  return { letter:"C",  color:C.orange, emoji:"💪", msg:"Keep practising — you're getting there!" };
+    return               { letter:"D",  color:C.red,    emoji:"📚", msg:"Review the lesson and try again!" };
+  };
+
+  const goStep = (n) => {
+    SFX.play("click");
+    setStep(n);
   };
 
   // ── LEARN PHASE ──
   if (phase === "learn") return (
-    <div style={{ padding: 16, animation: "fadeIn 0.3s ease" }}>
-      {/* Header */}
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
-        <NeonBtn ch="← BACK" color={C.dim} sm onClick={onBack} />
-        <div style={{ flex:1, color:unit.color, fontFamily:fp, fontSize:8, letterSpacing:1 }}>
+    <div style={{ padding:16, animation:"fadeIn 0.3s ease" }}>
+
+      {/* ── Header row ── */}
+      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+        <NeonBtn ch="←" color={C.dim} sm onClick={() => { stop(); onBack(); }} />
+        <div style={{ flex:1, color:unit.color, fontFamily:fp, fontSize:7, letterSpacing:1,
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
           {lesson.emoji} {lesson.title.toUpperCase()}
         </div>
-        <div style={{ color:C.dim, fontFamily:fp, fontSize:7 }}>{step+1}/{lesson.steps.length}</div>
+        <NarrationBtn enabled={audioOn} speaking={speaking} onToggle={toggleAudio} />
       </div>
 
-      {/* Step progress */}
-      <div style={{ display:"flex", gap:6, marginBottom:16 }}>
+      {/* ── Progress bar ── */}
+      <div style={{ display:"flex", gap:4, marginBottom:12 }}>
         {lesson.steps.map((_,i) => (
-          <div key={i} style={{ flex:1, height:6, borderRadius:2,
-            background: i <= step ? unit.color : "rgba(255,255,255,0.08)",
-            boxShadow: i === step ? `0 0 8px ${unit.color}` : "none",
+          <div key={i} onClick={() => goStep(i)} style={{ flex:1, height:7, borderRadius:3, cursor:"pointer",
+            background: i < step ? unit.color : i === step ? unit.color : "rgba(255,255,255,0.08)",
+            boxShadow: i === step ? `0 0 10px ${unit.color}` : "none",
+            opacity: i < step ? 0.6 : 1,
             transition:"all 0.3s" }} />
         ))}
       </div>
+      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:12 }}>
+        <span style={{ color:C.dim, fontFamily:fn, fontSize:11 }}>
+          {lesson.type} · Step {step+1} of {lesson.steps.length}
+        </span>
+        <span style={{ color:unit.color, fontFamily:fn, fontSize:11, fontWeight:800 }}>
+          {Math.round((step/lesson.steps.length)*100)}% done
+        </span>
+      </div>
 
-      {/* Step card */}
-      <PixelBorder color={unit.color} style={{ background:C.card, padding:20, marginBottom:16, minHeight:160,
-        display:"flex", alignItems:"center", justifyContent:"center" }}>
-        <div style={{ color:C.text, fontFamily:fn, fontSize:16, fontWeight:800,
-          lineHeight:1.7, textAlign:"center" }}>
-          {lesson.steps[step]}
+      {/* ── Visual Panel (if available) ── */}
+      {VisualComponent && (
+        <div style={{ background:"rgba(255,255,255,0.03)", border:`1.5px solid ${unit.color}33`,
+          borderRadius:10, padding:14, marginBottom:12, overflow:"hidden" }}>
+          <div style={{ color:unit.color, fontFamily:fp, fontSize:7, marginBottom:10, opacity:0.7 }}>
+            {visualEntry.label}
+          </div>
+          <VisualComponent step={step} color={unit.color} />
         </div>
-      </PixelBorder>
+      )}
 
-      {/* Nav buttons */}
-      <div style={{ display:"flex", gap:10 }}>
+      {/* ── Narration character ── */}
+      <div style={{ display:"flex", gap:10, marginBottom:10, alignItems:"flex-start" }}>
+        <div style={{ fontSize:32, flexShrink:0, marginTop:4 }}>
+          {subject==="Math" ? "🤖" : subject==="Science" ? "🔬" : "📖"}
+        </div>
+        <div style={{ flex:1, background:C.card, border:`2px solid ${unit.color}44`,
+          borderRadius:"0 12px 12px 12px", padding:"14px 16px", position:"relative" }}>
+          {/* Speech bubble triangle */}
+          <div style={{ position:"absolute", left:-10, top:14, width:0, height:0,
+            borderTop:"8px solid transparent", borderBottom:"8px solid transparent",
+            borderRight:`10px solid ${unit.color}44` }}/>
+          <div style={{ color:C.text, fontFamily:fn, fontSize:15, fontWeight:800, lineHeight:1.8 }}>
+            {lesson.steps[step]}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Nav buttons ── */}
+      <div style={{ display:"flex", gap:8 }}>
         {step > 0 && (
-          <NeonBtn ch="◀ PREV" color={C.dim} onClick={() => setStep(s=>s-1)} style={{ flex:1 }} />
+          <NeonBtn ch="◀" color={C.dim} onClick={() => goStep(step-1)} style={{ flex:1 }} />
         )}
         {step < lesson.steps.length - 1 ? (
-          <NeonBtn ch="NEXT ▶" color={unit.color} onClick={() => { SFX.play("click"); setStep(s=>s+1); }} style={{ flex:2 }} />
+          <NeonBtn ch="NEXT ▶" color={unit.color}
+            onClick={() => goStep(step+1)} style={{ flex:3 }} />
         ) : (
-          <NeonBtn ch="⚡ TAKE QUIZ!" color={C.gold}
-            onClick={() => { SFX.play("levelup"); setPhase("quiz"); }} style={{ flex:2 }} />
+          <NeonBtn ch="⚡ START QUIZ!" color={C.gold}
+            onClick={() => { stop(); SFX.play("levelup"); setPhase("quiz"); }}
+            style={{ flex:3 }} />
         )}
       </div>
     </div>
@@ -1265,71 +1266,211 @@ function LessonView({ lesson, unit, onBack, burst }) {
   // ── QUIZ PHASE ──
   if (phase === "quiz") return (
     <div style={{ padding:16, animation:"fadeIn 0.3s ease" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <div style={{ color:unit.color, fontFamily:fp, fontSize:8 }}>MINI QUIZ</div>
-        <div style={{ color:C.dim, fontFamily:fp, fontSize:7 }}>{qIdx+1}/{QUIZ_Q}</div>
+      {/* Header */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+        <div style={{ color:unit.color, fontFamily:fp, fontSize:8 }}>📝 QUIZ</div>
+        <div style={{ color:C.dim, fontFamily:fp, fontSize:7 }}>Question {qIdx+1} of {QUIZ_Q}</div>
       </div>
 
-      <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:2, height:6, marginBottom:16 }}>
-        <div style={{ width:`${(qIdx/QUIZ_Q)*100}%`, height:"100%", background:unit.color, transition:"width 0.4s" }} />
+      {/* Progress bar */}
+      <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:2, height:8, marginBottom:4, border:`1px solid ${unit.color}33` }}>
+        <div style={{ width:`${((qIdx + (answered?1:0))/QUIZ_Q)*100}%`, height:"100%", background:unit.color,
+          boxShadow:`0 0 6px ${unit.color}`, transition:"width 0.4s", borderRadius:2 }} />
+      </div>
+      {/* Score tracker */}
+      <div style={{ display:"flex", justifyContent:"flex-end", marginBottom:14 }}>
+        <div style={{ color:C.green, fontFamily:fp, fontSize:7 }}>✓ {score} correct</div>
       </div>
 
+      {/* Question */}
       <PixelBorder color={unit.color} style={{ background:C.card, padding:18, marginBottom:14 }}>
-        <div style={{ color:C.text, fontFamily:fn, fontSize:15, fontWeight:800, lineHeight:1.6, textAlign:"center" }}>
+        <div style={{ color:C.dim, fontFamily:fp, fontSize:7, marginBottom:8, letterSpacing:1 }}>
+          {q.topic?.toUpperCase()}
+        </div>
+        <div style={{ color:C.text, fontFamily:fn, fontSize:15, fontWeight:800, lineHeight:1.7 }}>
           {q.q}
         </div>
       </PixelBorder>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:14 }}>
-        {q.opts.map((opt,i) => {
-          const isCorrect = i === q.ans, isSelected = i === selected;
-          const col = answered ? (isCorrect ? C.green : isSelected ? C.red : C.border) : unit.color;
+      {/* Answer options */}
+      <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:14 }}>
+        {q.opts.map((opt, i) => {
+          const isCorrect = i === q.ans;
+          const isSelected = i === selected;
+          let borderCol = unit.color;
+          let bgCol = C.card;
+          let textCol = C.text;
+          if (answered) {
+            if (isCorrect)       { borderCol = C.green;  bgCol = `${C.green}18`;  textCol = C.green; }
+            else if (isSelected) { borderCol = C.red;    bgCol = `${C.red}18`;    textCol = C.red; }
+            else                 { borderCol = C.border; bgCol = C.card;           textCol = C.dim; }
+          }
           return (
-            <PixelBorder key={i} color={col}
-              style={{ background: answered&&isCorrect ? `${C.green}20` : answered&&isSelected ? `${C.red}20` : C.card, padding:16, textAlign:"center" }}
-              onClick={answered ? undefined : (e) => handleAnswer(i,e)}>
-              <div style={{ color: answered?(isCorrect?C.green:isSelected?C.red:C.dim):C.text, fontFamily:fn, fontSize:14, fontWeight:800 }}>
-                {opt}
+            <PixelBorder key={i} color={borderCol}
+              style={{ background:bgCol, padding:"14px 16px", cursor: answered?"default":"pointer" }}
+              onClick={answered ? undefined : (e) => handleAnswer(i, e)}>
+              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                <div style={{ width:28, height:28, borderRadius:4, background:`${borderCol}22`,
+                  border:`2px solid ${borderCol}`, display:"flex", alignItems:"center",
+                  justifyContent:"center", fontFamily:fp, fontSize:8, color:borderCol, flexShrink:0 }}>
+                  {answered ? (isCorrect ? "✓" : isSelected ? "✗" : String.fromCharCode(65+i)) : String.fromCharCode(65+i)}
+                </div>
+                <div style={{ color:textCol, fontFamily:fn, fontSize:14, fontWeight:800, flex:1 }}>
+                  {opt}
+                </div>
               </div>
             </PixelBorder>
           );
         })}
       </div>
 
+      {/* Feedback + explanation */}
       {answered && (
-        <NeonBtn
-          ch={qIdx+1 >= QUIZ_Q ? "🏁 FINISH!" : "NEXT →"}
-          color={selected===q.ans ? C.green : C.orange}
-          onClick={() => {
-            if (qIdx+1 >= QUIZ_Q) { setPhase("done"); }
-            else { setQIdx(i=>i+1); setSelected(null); setAnswered(false); }
-          }}
-          style={{ width:"100%" }}
-        />
+        <div style={{ marginBottom:12 }}>
+          <PixelBorder color={selected===q.ans ? C.green : C.red}
+            style={{ background: selected===q.ans ? `${C.green}12` : `${C.red}12`, padding:"12px 14px", marginBottom:10 }}>
+            <div style={{ color: selected===q.ans ? C.green : C.red, fontFamily:fp, fontSize:8, marginBottom:6 }}>
+              {selected===q.ans ? "✓ CORRECT!" : "✗ INCORRECT"}
+            </div>
+            {q.explain && (
+              <div style={{ color:C.text, fontFamily:fn, fontSize:13, lineHeight:1.6 }}>
+                💡 {q.explain}
+              </div>
+            )}
+          </PixelBorder>
+          <NeonBtn
+            ch={qIdx+1 >= QUIZ_Q ? "🏁 SEE MY RESULTS!" : "NEXT QUESTION →"}
+            color={selected===q.ans ? C.green : C.orange}
+            onClick={() => {
+              if (qIdx+1 >= QUIZ_Q) { setPhase("done"); }
+              else { setQIdx(i=>i+1); setSelected(null); setAnswered(false); }
+            }}
+            style={{ width:"100%" }}
+          />
+        </div>
       )}
     </div>
   );
 
-  // ── DONE PHASE ──
+  // ── RESULTS PHASE ──
   if (phase === "done") {
     const pct = Math.round((score/QUIZ_Q)*100);
-    const grade = pct===100?"S+":pct>=67?"A":"B";
-    const gc = pct===100?C.gold:pct>=67?C.green:C.blue;
+    const gradeInfo = getLetterGrade(pct);
+    const xpEarned = Math.round(unit.xp * (pct / 100));
+    const coinsEarned = Math.round(xpEarned / 5);
+
+    if (showReview) return (
+      <div style={{ padding:16, animation:"fadeIn 0.3s ease" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+          <NeonBtn ch="← BACK" color={C.dim} sm onClick={() => setShowReview(false)} />
+          <div style={{ color:C.text, fontFamily:fp, fontSize:9 }}>QUESTION REVIEW</div>
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+          {answers.map((a, idx) => (
+            <PixelBorder key={idx} color={a.correct ? C.green : C.red}
+              style={{ background:C.card, padding:14 }}>
+              {/* Q number + status */}
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                <div style={{ color:C.dim, fontFamily:fp, fontSize:7 }}>Q{idx+1} · {a.qObj.topic}</div>
+                <div style={{ color:a.correct ? C.green : C.red, fontFamily:fp, fontSize:8 }}>
+                  {a.correct ? "✓ CORRECT" : "✗ WRONG"}
+                </div>
+              </div>
+              {/* Question text */}
+              <div style={{ color:C.text, fontFamily:fn, fontSize:13, fontWeight:800, marginBottom:10, lineHeight:1.6 }}>
+                {a.qObj.q}
+              </div>
+              {/* Answer comparison */}
+              {!a.correct && (
+                <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:8 }}>
+                  <div style={{ background:`${C.red}15`, border:`1px solid ${C.red}44`, borderRadius:4,
+                    padding:"8px 12px", display:"flex", alignItems:"center", gap:8 }}>
+                    <span style={{ color:C.red, fontFamily:fp, fontSize:8 }}>✗ YOU:</span>
+                    <span style={{ color:C.text, fontFamily:fn, fontSize:13, fontWeight:700 }}>
+                      {a.qObj.opts[a.selected]}
+                    </span>
+                  </div>
+                  <div style={{ background:`${C.green}15`, border:`1px solid ${C.green}44`, borderRadius:4,
+                    padding:"8px 12px", display:"flex", alignItems:"center", gap:8 }}>
+                    <span style={{ color:C.green, fontFamily:fp, fontSize:8 }}>✓ CORRECT:</span>
+                    <span style={{ color:C.green, fontFamily:fn, fontSize:13, fontWeight:700 }}>
+                      {a.qObj.opts[a.qObj.ans]}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {/* Explanation */}
+              {a.qObj.explain && (
+                <div style={{ background:"rgba(255,255,255,0.04)", borderRadius:4, padding:"8px 12px",
+                  color:C.muted, fontFamily:fn, fontSize:12, lineHeight:1.6 }}>
+                  💡 {a.qObj.explain}
+                </div>
+              )}
+            </PixelBorder>
+          ))}
+        </div>
+        <div style={{ height:16 }} />
+        <NeonBtn ch="← BACK TO RESULTS" color={unit.color} onClick={() => setShowReview(false)} style={{ width:"100%" }} />
+        <div style={{ height:8 }} />
+        <NeonBtn ch="🏠 BACK TO UNITS" color={C.dim} onClick={onBack} style={{ width:"100%" }} />
+      </div>
+    );
+
     return (
-      <div style={{ padding:24, textAlign:"center", animation:"fadeIn 0.4s ease" }}>
-        <div style={{ fontSize:60, marginBottom:8 }}>{lesson.emoji}</div>
-        <div style={{ color:gc, fontFamily:fp, fontSize:28, textShadow:`0 0 20px ${gc}`, marginBottom:4 }}>{grade}</div>
-        <div style={{ color:C.text, fontFamily:fp, fontSize:11, marginBottom:4 }}>LESSON COMPLETE!</div>
-        <div style={{ color:C.muted, fontFamily:fn, fontSize:12, marginBottom:24 }}>{score}/{QUIZ_Q} correct • +{unit.xp} XP • +{Math.round(unit.xp/5)} ⭐</div>
-        <PixelBorder color={gc} style={{ background:C.card, padding:14, marginBottom:20 }}>
-          {[{l:"XP Earned",v:`+${unit.xp}`,c:C.blue},{l:"Coins",v:`+${Math.round(unit.xp/5)} ⭐`,c:C.gold},{l:"Score",v:`${pct}%`,c:gc}].map(r=>(
-            <div key={r.l} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:`1px solid ${C.border}` }}>
+      <div style={{ padding:20, animation:"fadeIn 0.4s ease" }}>
+        {/* Big grade */}
+        <div style={{ textAlign:"center", marginBottom:20 }}>
+          <div style={{ fontSize:56, marginBottom:8 }}>{gradeInfo.emoji}</div>
+          <div style={{ color:gradeInfo.color, fontFamily:fp, fontSize:40,
+            textShadow:`0 0 30px ${gradeInfo.color}`, marginBottom:6 }}>{gradeInfo.letter}</div>
+          <div style={{ color:C.text, fontFamily:fp, fontSize:10, marginBottom:4 }}>QUIZ COMPLETE!</div>
+          <div style={{ color:C.muted, fontFamily:fn, fontSize:13 }}>{gradeInfo.msg}</div>
+        </div>
+
+        {/* Score breakdown */}
+        <PixelBorder color={gradeInfo.color} style={{ background:C.card, padding:16, marginBottom:14 }}>
+          {/* Visual score bar */}
+          <div style={{ marginBottom:12 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+              <span style={{ color:C.muted, fontFamily:fn, fontSize:12 }}>Score</span>
+              <span style={{ color:gradeInfo.color, fontFamily:fp, fontSize:11 }}>{score}/{QUIZ_Q} · {pct}%</span>
+            </div>
+            <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:2, height:10, overflow:"hidden" }}>
+              <div style={{ width:`${pct}%`, height:"100%", background:gradeInfo.color,
+                boxShadow:`0 0 8px ${gradeInfo.color}`, transition:"width 1.2s ease" }} />
+            </div>
+          </div>
+          {/* Per-question dots */}
+          <div style={{ display:"flex", gap:6, marginBottom:12 }}>
+            {answers.map((a, i) => (
+              <div key={i} style={{ flex:1, height:28, borderRadius:4,
+                background: a.correct ? `${C.green}30` : `${C.red}30`,
+                border:`2px solid ${a.correct ? C.green : C.red}`,
+                display:"flex", alignItems:"center", justifyContent:"center",
+                color: a.correct ? C.green : C.red, fontFamily:fp, fontSize:9 }}>
+                {a.correct ? "✓" : "✗"}
+              </div>
+            ))}
+          </div>
+          {/* XP / Coins */}
+          {[
+            { l:"XP Earned",   v:`+${xpEarned}`,        c:C.blue },
+            { l:"Coins Earned", v:`+${coinsEarned} ⭐`,  c:C.gold },
+            { l:"Questions",    v:`${score} / ${QUIZ_Q} correct`, c:gradeInfo.color },
+          ].map(r => (
+            <div key={r.l} style={{ display:"flex", justifyContent:"space-between",
+              padding:"8px 0", borderBottom:`1px solid ${C.border}` }}>
               <span style={{ color:C.muted, fontFamily:fn, fontSize:12 }}>{r.l}</span>
               <span style={{ color:r.c, fontFamily:fp, fontSize:10 }}>{r.v}</span>
             </div>
           ))}
         </PixelBorder>
-        <NeonBtn ch="← BACK TO UNITS" color={unit.color} onClick={onBack} style={{ width:"100%" }} />
+
+        {/* Actions */}
+        <NeonBtn ch="🔍 REVIEW MY ANSWERS" color={C.purple}
+          onClick={() => setShowReview(true)} style={{ width:"100%", marginBottom:10 }} />
+        <NeonBtn ch="🏠 BACK TO UNITS" color={unit.color}
+          onClick={onBack} style={{ width:"100%" }} />
       </div>
     );
   }
@@ -1337,13 +1478,20 @@ function LessonView({ lesson, unit, onBack, burst }) {
 }
 
 function LearnScreen({ profile, burst }) {
+  const [subject, setSubject] = useState("Math");
   const [openUnit, setOpenUnit] = useState(null);
   const [openLesson, setOpenLesson] = useState(null);
+
+  const grade = profile?.grade || "2-3";
+  const units = getUnits(grade, subject);
+  const subjectColor = SUBJECT_META[subject]?.color || C.blue;
 
   // ── Lesson view ──
   if (openLesson && openUnit) return (
     <LessonView
-      lesson={openLesson} unit={openUnit} burst={burst}
+      lesson={openLesson} unit={openUnit}
+      grade={grade} subject={subject}
+      burst={burst}
       onBack={() => setOpenLesson(null)}
     />
   );
@@ -1353,15 +1501,16 @@ function LearnScreen({ profile, burst }) {
     <div style={{ padding:16, animation:"fadeIn 0.3s ease" }}>
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
         <NeonBtn ch="← BACK" color={C.dim} sm onClick={() => setOpenUnit(null)} />
-        <div style={{ color:openUnit.color, fontFamily:fp, fontSize:9, letterSpacing:1 }}>
+        <div style={{ color:openUnit.color, fontFamily:fp, fontSize:9, letterSpacing:1, flex:1 }}>
           {openUnit.emoji} {openUnit.title.toUpperCase()}
         </div>
+        <div style={{ color:C.dim, fontFamily:fn, fontSize:10 }}>+{openUnit.xp} XP</div>
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
         {openUnit.lessons.map((lesson, idx) => (
           <PixelBorder key={lesson.id} color={openUnit.color}
             style={{ background:C.card, padding:16 }}
-            onClick={() => { SFX.play("click"); setOpenLesson(lesson); }}>
+            onClick={() => { SFX.play("click"); setOpenLesson({...lesson, quizOffset: idx * 2}); }}>
             <div style={{ display:"flex", alignItems:"center", gap:12 }}>
               <div style={{ width:40, height:40, borderRadius:4, background:`${openUnit.color}20`,
                 border:`2px solid ${openUnit.color}55`, display:"flex", alignItems:"center",
@@ -1370,13 +1519,13 @@ function LearnScreen({ profile, burst }) {
               </div>
               <div style={{ flex:1 }}>
                 <div style={{ color:openUnit.color, fontFamily:fp, fontSize:8, letterSpacing:1, marginBottom:3 }}>
-                  LESSON {idx+1}
+                  LESSON {idx+1} {lesson.type}
                 </div>
                 <div style={{ color:C.text, fontFamily:fn, fontSize:13, fontWeight:800 }}>
                   {lesson.title}
                 </div>
                 <div style={{ color:C.dim, fontFamily:fn, fontSize:10, marginTop:2 }}>
-                  {lesson.type} {lesson.steps.length} steps + mini quiz
+                  {lesson.steps.length} steps + 5-question quiz
                 </div>
               </div>
               <div style={{ color:openUnit.color, fontFamily:fp, fontSize:14 }}>▶</div>
@@ -1387,40 +1536,77 @@ function LearnScreen({ profile, burst }) {
     </div>
   );
 
-  // ── Unit list (main view) ──
+  // ── Subject selector + unit list ──
   return (
     <div style={{ padding:16, animation:"fadeIn 0.4s ease" }}>
+      {/* Header */}
       <div style={{ color:C.green, fontFamily:fp, fontSize:12, marginBottom:4, letterSpacing:2 }}>📚 LEARN</div>
-      <div style={{ color:C.muted, fontFamily:fn, fontSize:12, marginBottom:16 }}>
-        Complete units to unlock boss battles!
+      <div style={{ color:C.muted, fontFamily:fn, fontSize:12, marginBottom:14 }}>
+        {profile?.gradeLabel || grade} • Pick a subject and start learning!
+      </div>
+
+      {/* Subject tabs */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:18 }}>
+        {Object.entries(SUBJECT_META).map(([key, meta]) => {
+          const active = subject === key;
+          return (
+            <div key={key}
+              onPointerUp={() => { SFX.play("click"); setSubject(key); setOpenUnit(null); }}
+              style={{
+                background: active ? `${meta.color}22` : C.card,
+                border: `2px solid ${active ? meta.color : C.border}`,
+                borderRadius:4, padding:"10px 8px",
+                display:"flex", alignItems:"center", gap:8,
+                cursor:"pointer", touchAction:"manipulation",
+                boxShadow: active ? `0 0 10px ${meta.color}44` : "none",
+                transition:"all 0.15s",
+              }}>
+              <span style={{ fontSize:20 }}>{meta.emoji}</span>
+              <span style={{ color: active ? meta.color : C.muted, fontFamily:fp, fontSize:7, letterSpacing:1 }}>
+                {meta.label.toUpperCase()}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Units list */}
+      <div style={{ color:subjectColor, fontFamily:fp, fontSize:8, letterSpacing:2, marginBottom:10 }}>
+        {SUBJECT_META[subject].emoji} {SUBJECT_META[subject].label.toUpperCase()} UNITS
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-        {UNITS.map(u => (
-          <PixelBorder key={u.id} color={u.locked ? C.dim : u.color}
-            style={{ background:C.card, padding:16, opacity:u.locked?0.5:1 }}
-            onClick={u.locked ? undefined : () => { SFX.play("click"); setOpenUnit(u); }}>
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:u.locked?0:10 }}>
-              <div style={{ fontSize:32, width:48, height:48, display:"flex", alignItems:"center",
-                justifyContent:"center", background:`${u.color}20`, border:`2px solid ${u.color}44`,
+        {units.length === 0 && (
+          <div style={{ color:C.dim, fontFamily:fn, fontSize:13, textAlign:"center", padding:40 }}>
+            No units yet for this grade level!
+          </div>
+        )}
+        {units.map((u, idx) => (
+          <PixelBorder key={u.id} color={subjectColor}
+            style={{ background:C.card, padding:16 }}
+            onClick={() => { SFX.play("click"); setOpenUnit({...u, color:subjectColor}); }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:10 }}>
+              <div style={{ fontSize:30, width:48, height:48, display:"flex", alignItems:"center",
+                justifyContent:"center", background:`${subjectColor}20`, border:`2px solid ${subjectColor}44`,
                 borderRadius:4, flexShrink:0 }}>
-                {u.locked ? "🔒" : u.emoji}
+                {u.emoji}
               </div>
               <div style={{ flex:1 }}>
-                <div style={{ color:u.locked?C.dim:u.color, fontFamily:fp, fontSize:8, letterSpacing:1, marginBottom:4 }}>
-                  {u.title.toUpperCase()}
+                <div style={{ color:subjectColor, fontFamily:fp, fontSize:7, letterSpacing:1, marginBottom:4 }}>
+                  UNIT {idx+1}
+                </div>
+                <div style={{ color:C.text, fontFamily:fn, fontSize:13, fontWeight:800, marginBottom:2 }}>
+                  {u.title}
                 </div>
                 <div style={{ color:C.dim, fontFamily:fn, fontSize:10 }}>
-                  {u.locked ? "Complete previous unit to unlock" : `${u.lessons.length} lessons • +${u.xp} XP`}
+                  {u.lessons.length} lessons • {u.quiz?.length || 0} quiz questions • +{u.xp} XP
                 </div>
               </div>
-              {!u.locked && <div style={{ color:u.color, fontFamily:fp, fontSize:8 }}>{u.progress}%</div>}
+              <div style={{ color:subjectColor, fontFamily:fp, fontSize:8 }}>▶</div>
             </div>
-            {!u.locked && (
-              <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:2, height:8, border:`1px solid ${u.color}33` }}>
-                <div style={{ width:`${u.progress}%`, height:"100%", background:u.color,
-                  boxShadow:`0 0 6px ${u.color}`, transition:"width 1s" }} />
-              </div>
-            )}
+            <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:2, height:6, border:`1px solid ${subjectColor}33` }}>
+              <div style={{ width:`${u.progress || 0}%`, height:"100%", background:subjectColor,
+                boxShadow:`0 0 6px ${subjectColor}`, transition:"width 1s" }} />
+            </div>
           </PixelBorder>
         ))}
       </div>
@@ -1488,13 +1674,13 @@ function StoreScreen({ profile, burst }) {
 // ═══════════════════════════════════════════════════════════════════
 const PARENT_DATA = {
   children: [
-    { name:"Alex", avatar:"🧒", grade:"3rd Grade", xp:2840, streak:9, coins:420,
+    { name:"Alex", avatar:"🧒", grade:"2nd Grade", xp:2840, streak:9, coins:420,
       weeklyXP:480, lessonsThisWeek:7, quizzesThisWeek:4, avgScore:84,
       badges:["🧛 Minus Slayer","⚡ Speed Demon"],
       rewardRequests:[{ id:1, item:"Ice Cream", coins:150, status:"pending" }],
       subjects:{ Math:87, Science:72 }
     },
-    { name:"Mia", avatar:"👧", grade:"1st Grade", xp:980, streak:5, coins:210,
+    { name:"Mia", avatar:"👧", grade:"2nd Grade", xp:980, streak:5, coins:210,
       weeklyXP:210, lessonsThisWeek:3, quizzesThisWeek:2, avgScore:76,
       badges:["🌟 Star Gazer"],
       rewardRequests:[],
