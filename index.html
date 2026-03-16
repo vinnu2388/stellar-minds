@@ -1,55 +1,143 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>Stellar Minds — Learn, Battle, Earn!</title>
-  <meta name="description" content="The K-5 learning app where kids earn real rewards by mastering math and science." />
+    <!-- ── Primary Meta ── -->
+    <title>LetzSkool - Learn Math & Science</title>
+    <meta name="description" content="Gamified K-5 Math & Science learning app. Earn XP, unlock rewards, and master school standards!" />
+    <meta name="keywords" content="kids learning, math, science, K-5, education, gamified, elementary school" />
+    <meta name="author" content="LetzSkool" />
 
-  <!-- PWA -->
-  <meta name="theme-color" content="#08080F" />
-  <link rel="manifest" href="/manifest.json" />
+    <!-- ── PWA ── -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1B3FAB" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="LetzSkool" />
 
-  <!-- Apple PWA -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Stellar Minds" />
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- ── Apple / iOS PWA ── -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LetzSkool" />
+    <link rel="apple-touch-icon" href="/letzkool-logo.png" />
+    <link rel="apple-touch-startup-image" href="/letzkool-logo.png" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png" />
+    <!-- ── Favicon ── -->
+    <link rel="icon" type="image/png" href="/letzkool-logo.png" />
+    <link rel="shortcut icon" href="/letzkool-logo.png" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- ── Open Graph (sharing previews) ── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="LetzSkool - Learn Math & Science" />
+    <meta property="og:description" content="Gamified K-5 learning app. Earn XP, unlock rewards, master school standards!" />
+    <meta property="og:image" content="/letzkool-logo.png" />
+    <meta property="og:url" content="https://letzkool.com" />
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body, #root {
-      width: 100%;
-      height: 100%;
-      background: #08080F;
-      overscroll-behavior: none;
-    }
-    body {
-      padding: env(safe-area-inset-top) env(safe-area-inset-right)
-               env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="LetzSkool" />
+    <meta name="twitter:description" content="Gamified K-5 Math & Science learning for kids!" />
+    <meta name="twitter:image" content="/letzkool-logo.png" />
+
+    <!-- ── Microsoft Tiles ── -->
+    <meta name="msapplication-TileImage" content="/letzkool-logo.png" />
+    <meta name="msapplication-TileColor" content="#1B3FAB" />
+
+    <!-- ── Fonts preload ── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap"
+    />
+
+    <style>
+      /* Prevent flash of unstyled content */
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        background: #1B3FAB;
+        height: 100%;
+      }
+      /* Safe area insets for notched phones */
+      #root {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        background: #F0F4FF;
+      }
+      /* Loading spinner shown before React mounts */
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, #1B3FAB, #3B82F6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.4s ease;
+      }
+      #splash img {
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+      #splash p {
+        color: white;
+        font-family: 'Nunito', sans-serif;
+        font-weight: 900;
+        font-size: 28px;
+        margin-top: 16px;
+        letter-spacing: -0.5px;
+      }
+      #splash small {
+        color: rgba(255,255,255,0.7);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        margin-top: 4px;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Splash screen shown while JS loads -->
+    <div id="splash">
+      <img src="/letzkool-logo.png" alt="LetzSkool" />
+      <p>LetzSkool</p>
+      <small>Loading your lessons...</small>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+      // Hide splash once React has mounted
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
-          .then(r => console.log('[App] SW registered:', r.scope))
-          .catch(e => console.log('[App] SW failed:', e));
+        setTimeout(() => {
+          const splash = document.getElementById('splash');
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 400);
+          }
+        }, 600);
       });
-    }
-  </script>
-</body>
+
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((reg) => console.log('[LetzSkool] SW registered:', reg.scope))
+            .catch((err) => console.warn('[LetzSkool] SW failed:', err));
+        });
+      }
+    </script>
+  </body>
 </html>

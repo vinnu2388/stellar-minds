@@ -1,61 +1,23 @@
 {
-  "name": "MathSci Stars",
-  "short_name": "MathSci Stars",
-  "description": "The fun K-5 math & science learning app with real rewards!",
+  "name": "LetzSkool - Learn Math & Science",
+  "short_name": "LetzSkool",
+  "description": "Gamified K-5 Math & Science learning app for kids. Earn XP, unlock rewards, and master 2nd grade standards!",
   "start_url": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "browser"],
-  "orientation": "any",
-  "background_color": "#05070E",
-  "theme_color": "#7C3AED",
-  "scope": "/",
-  "lang": "en-US",
+  "orientation": "portrait",
+  "background_color": "#1B3FAB",
+  "theme_color": "#1B3FAB",
   "categories": ["education", "kids"],
+  "lang": "en-US",
   "icons": [
     {
-      "src": "/icons/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192.png",
+      "src": "/letzkool-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
+      "src": "/letzkool-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -63,53 +25,26 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/home.png",
-      "sizes": "390x844",
+      "src": "/letzkool-logo.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Home screen with star coins and progress"
-    },
-    {
-      "src": "/screenshots/learn.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Curriculum lessons with AI narration"
-    },
-    {
-      "src": "/screenshots/tablet.png",
-      "sizes": "1024x768",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Full tablet view with sidebar navigation"
+      "form_factor": "narrow"
     }
   ],
   "shortcuts": [
     {
       "name": "Start Learning",
       "short_name": "Learn",
-      "description": "Jump straight into your lessons",
+      "description": "Jump into your lessons",
       "url": "/?tab=learn",
-      "icons": [{ "src": "/icons/shortcut-learn.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/letzkool-logo.png", "sizes": "96x96" }]
     },
     {
-      "name": "Ask StarBot",
-      "short_name": "StarBot",
-      "description": "Chat with your AI tutor",
-      "url": "/?starbot=open",
-      "icons": [{ "src": "/icons/shortcut-bot.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Reward Store",
-      "short_name": "Store",
-      "description": "Spend your Star Coins",
-      "url": "/?tab=store",
-      "icons": [{ "src": "/icons/shortcut-store.png", "sizes": "96x96" }]
+      "name": "Weekly Competition",
+      "short_name": "Compete",
+      "description": "Join the weekly quiz challenge",
+      "url": "/?tab=compete",
+      "icons": [{ "src": "/letzkool-logo.png", "sizes": "96x96" }]
     }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+  ]
 }
