@@ -1840,9 +1840,128 @@ function BrainBotButton({ profile, context, onClick }) {
 
 // ─── APP ROOT ─────────────────────────────────────────────────────
 const STUDENT_TABS=[{id:"home",i:"🏠",l:"Home"},{id:"learn",i:"📚",l:"Learn"},{id:"compete",i:"⚔️",l:"Compete"},{id:"store",i:"🛍️",l:"Store"},{id:"more",i:"✦",l:"More"}];
+// ─── iOS INSTALL PROMPT ───────────────────────────────────────────
+// Paste this component anywhere before the App() function in letzkool.jsx
+// It auto-detects iOS and shows a "how to install" guide
+
+function useIosInstallPrompt() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    // Detect iOS
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    // Detect if already installed (standalone = already added to home screen)
+    const isStandalone = window.navigator.standalone === true;
+    // Only show once per session using sessionStorage
+    const dismissed = sessionStorage.getItem('lz-install-dismissed');
+
+    if (isIos && !isStandalone && !dismissed) {
+      // Small delay so it doesn't compete with splash screen
+      setTimeout(() => setShow(true), 3000);
+    }
+  }, []);
+
+  const dismiss = () => {
+    sessionStorage.setItem('lz-install-dismissed', '1');
+    setShow(false);
+  };
+
+  return { show, dismiss };
+}
+
+function IosInstallBanner({ onDismiss }) {
+  return (
+    <div style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 9999,
+      padding: '0 12px 12px',
+      animation: 'slideUp 0.4s ease',
+    }}>
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to   { transform: translateY(0);    opacity: 1; }
+        }
+      `}</style>
+
+      <div style={{
+        background: 'white',
+        borderRadius: 20,
+        padding: '18px 18px 16px',
+        boxShadow: '0 -4px 40px rgba(27,63,171,0.18), 0 8px 32px rgba(0,0,0,0.12)',
+        border: '1px solid rgba(27,63,171,0.12)',
+      }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+          <img
+            src="/letzkool-logo.png"
+            alt="LetzSkool"
+            style={{ width: 48, height: 48, borderRadius: 12, flexShrink: 0 }}
+          />
+          <div style={{ flex: 1 }}>
+            <div style={{ color: '#1E2A4A', fontWeight: 900, fontSize: 16, fontFamily: "'Nunito', sans-serif" }}>
+              Install LetzSkool
+            </div>
+            <div style={{ color: '#64748B', fontSize: 12, fontFamily: "'DM Sans', sans-serif", marginTop: 2 }}>
+              Add to your home screen for the best experience!
+            </div>
+          </div>
+          <div
+            onClick={onDismiss}
+            style={{
+              width: 28, height: 28, borderRadius: '50%',
+              background: '#F1F5F9',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 14, cursor: 'pointer', color: '#94A3B8', flexShrink: 0,
+            }}
+          >✕</div>
+        </div>
+
+        {/* Steps */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[
+            { n: '1', icon: '⬆️', text: 'Tap the Share button at the bottom of Safari' },
+            { n: '2', icon: '➕', text: 'Scroll down and tap "Add to Home Screen"' },
+            { n: '3', icon: '🚀', text: 'Tap "Add" — LetzSkool opens like a real app!' },
+          ].map(step => (
+            <div key={step.n} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: 10,
+                background: 'linear-gradient(135deg, #1B3FAB, #3B82F6)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 16, flexShrink: 0,
+              }}>
+                {step.icon}
+              </div>
+              <div style={{
+                color: '#1E2A4A', fontSize: 13,
+                fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4,
+              }}>
+                {step.text}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Arrow pointing to Safari share button */}
+        <div style={{
+          textAlign: 'center', marginTop: 14,
+          color: '#94A3B8', fontSize: 11,
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
+          Look for this icon in Safari → <span style={{ fontSize: 16 }}>⎙</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function App(){
   const isTablet = useIsTablet();
+  const { show: showIosBanner, dismiss: dismissIosBanner } = useIosInstallPrompt(); // ← ADD THIS
   const [coppaAccepted,setCoppaAccepted]=useState(false);
   const [session,setSession]=useState(null);
   const [tab,setTab]=useState("home");
@@ -2173,6 +2292,10 @@ export default function App(){
 
         {/* Bottom Nav */}
         {session&&coppaAccepted&&<PhoneBottomNav/>}
+
+        {/* iOS Install Banner */}
+        {showIosBanner && <IosInstallBanner onDismiss={dismissIosBanner}/>}  {/* ← ADD THIS */}
+
       </div>
     </div>
   );
